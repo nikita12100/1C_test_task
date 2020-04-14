@@ -117,15 +117,15 @@ std::vector<std::vector<long long>> FindSubMatrix::polinom_matrix_hash(const std
     return result;
 }
 
-std::vector<long long> FindSubMatrix::polinom_sub_matrix_hash(const std::string& s) {
+std::vector<long long> FindSubMatrix::polinom_sub_matrix_hash(const std::string& matrix) {
     int len_of_string = sub_matrix.size();
     int len_of_raw = sub_matrix.size();     // square
     std::vector<long long> result(len_of_raw, 0);
 
     for (int j = 0; j < len_of_raw; ++j) {
-        long long current_hash = ((int)s[0] - 48);
+        long long current_hash = ((int)matrix[0] - 48);
         for (int i = 1; i < len_of_string; i++) {
-            current_hash = current_hash + pow[i] * ((int)s[i] - 48);
+            current_hash = current_hash + pow[i] * ((int)matrix[i] - 48);
         }
         result[j] = current_hash;
     }
