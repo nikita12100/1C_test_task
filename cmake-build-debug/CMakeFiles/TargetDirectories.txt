@@ -1,0 +1,3 @@
+/home/nikita/CLionProjects/1C/1C_test_task/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/nikita/CLionProjects/1C/1C_test_task/cmake-build-debug/CMakeFiles/1C_test_task.dir
+/home/nikita/CLionProjects/1C/1C_test_task/cmake-build-debug/CMakeFiles/edit_cache.dir
