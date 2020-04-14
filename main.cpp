@@ -14,11 +14,13 @@ private:
     std::vector<std::vector<int>> matrix;
     std::vector<std::vector<int>> sub_matrix;
 
-    std::vector<std::vector<long>> matrix_hash;
-    std::vector<long> sub_matrix_hash;
+    std::vector<std::vector<long long>> matrix_hash;
+    std::vector<long long> sub_matrix_hash;
 
-    std::vector<std::vector<long>> polinom_matrix_hash(const std::string matrix);
-    std::vector<long> polinom_sub_matrix_hash(const std::string matrix);
+    long long pow[1000];
+
+    std::vector<std::vector<long long>> polinom_matrix_hash(const std::string& matrix);
+    std::vector<long long> polinom_sub_matrix_hash(const std::string& matrix);
 
 };
 
@@ -41,6 +43,12 @@ FindSubMatrix::FindSubMatrix(std::vector<std::vector<int>>& _matrix, std::vector
         for(int j=0; j < m; ++j)
             sub_string_matrix[i*m+j] = sub_matrix[i][j];
     sub_matrix_hash = polinom_sub_matrix_hash(sub_string_matrix);
+
+    int parameter = 257;
+    pow[0] = 1;
+    for (int i = 1; i <= 1000; i++) {
+        pow[i] = pow[i - 1] * parameter % 100000000000007;
+    }
 }
 
 std::pair<int, int> FindSubMatrix::get_sub_matrix_pos(){
@@ -56,7 +64,7 @@ std::pair<int, int> FindSubMatrix::get_sub_matrix_pos(){
     for(int i=0; i < n; ++i){
         for (int j = 0; j < n - m; ++j) {
             for (int k = 0; k < m; ++k) {
-                if(matrix_hash[i][j + k] == sub_matrix_hash[i])
+                if(matrix_hash[i][j + k] == pow[i*(j+k)*n]*sub_matrix_hash[i])
                 {
                     if(i == 0)
                         count_of_equal_lines[i][j+k] = 1;       // first common line
@@ -83,12 +91,45 @@ int FindSubMatrix::get_sub_matrix_direction(){
     /// ...
 }
 
-std::vector<std::vector<long>> FindSubMatrix::polinom_matrix_hash(const std::string matrix){
-    /// ...
+std::vector<std::vector<long long>> FindSubMatrix::polinom_matrix_hash(const std::string& matrix) {
+    int len_of_string_in_matrix = matrix.size();
+    int len_of_raw_in_matrix = matrix.size(); // square
+    int size_of_searching_string_matrix = sub_matrix.size();
+    std::vector<std::vector<long long>> result(len_of_raw_in_matrix,
+                                     std::vector<long long>(len_of_string_in_matrix - size_of_searching_string_matrix,0));
+
+    std::vector<long long> prefix;
+
+    prefix.assign(matrix.length(), 0);
+    // calculate hash of prefix
+    prefix[0] = ((int)matrix[0] - 48);
+    for (int i = 1; i < matrix.length(); i++) {
+        prefix[i] = prefix[i - 1] + pow[i] * ((int)matrix[i] - 48);
+    }
+
+    for (int i = 0; i < len_of_raw_in_matrix; ++i) {
+        result[i][0] = prefix[i*len_of_raw_in_matrix + size_of_searching_string_matrix - 1];
+        for (int j = 1; j < len_of_string_in_matrix - size_of_searching_string_matrix; ++j) {
+            result[i][j] = prefix[i*len_of_raw_in_matrix + j + size_of_searching_string_matrix - 1]
+                           - prefix[i*len_of_raw_in_matrix + j - 1];
+        }
+    }
+    return result;
 }
 
-std::vector<long> FindSubMatrix::polinom_sub_matrix_hash(const std::string matrix){
-    /// ...
+std::vector<long long> FindSubMatrix::polinom_sub_matrix_hash(const std::string& s) {
+    int len_of_string = sub_matrix.size();
+    int len_of_raw = sub_matrix.size();     // square
+    std::vector<long long> result(len_of_raw, 0);
+
+    for (int j = 0; j < len_of_raw; ++j) {
+        long long current_hash = ((int)s[0] - 48);
+        for (int i = 1; i < len_of_string; i++) {
+            current_hash = current_hash + pow[i] * ((int)s[i] - 48);
+        }
+        result[j] = current_hash;
+    }
+    return result;
 }
 
 
